@@ -26,7 +26,7 @@ export const Agent = ({ userName, userId, type }: AgentProps) => {
 
   useEffect(() => {
     const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
-    const OnCallEnd = () => setCallStatus(CallStatus.FINISHED);
+    const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
 
     const onMessage = (message: Message) => {
       if (message.type === "transcript" && message.transcriptType === "final") {
@@ -42,7 +42,7 @@ export const Agent = ({ userName, userId, type }: AgentProps) => {
     const onError = (error: Error) => console.log("Error", error);
 
     vapi.on("call-start", onCallStart);
-    vapi.on("call-end", OnCallEnd);
+    vapi.on("call-end", onCallEnd);
     vapi.on("message", onMessage);
     vapi.on("speech-start", onSpeechStart);
     vapi.on("speech-end", onSpeechEnd);
@@ -50,7 +50,7 @@ export const Agent = ({ userName, userId, type }: AgentProps) => {
 
     return () => {
       vapi.off("call-start", onCallStart);
-      vapi.off("call-end", OnCallEnd);
+      vapi.off("call-end", onCallEnd);
       vapi.off("message", onMessage);
       vapi.off("speech-start", onSpeechStart);
       vapi.off("speech-end", onSpeechEnd);
@@ -141,9 +141,7 @@ export const Agent = ({ userName, userId, type }: AgentProps) => {
             />
 
             <span className="relative">
-              {callStatus === "INACTIVE" || callStatus === "FINISHED"
-                ? "Call"
-                : ". . ."}
+              {isCallInactiveOrFinished ? "Call" : ". . ."}
             </span>
           </button>
         ) : (
