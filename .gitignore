@@ -1,41 +1,99 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ============================
+# General
+# ============================
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Node dependencies
+node_modules/
 
-# testing
-/coverage
+# Output folders
+dist/
+build/
+.astro/
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Log files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Environment variable files
+.env
+.env.*.local
+.env.local
+.env.production
+.env.development
 
-# vercel
-.vercel
+# OS-specific files
+.DS_Store
+Thumbs.db
+Icon?
 
-# typescript
+# ============================
+# Editors & IDEs
+# ============================
+
+# VS Code
+.vscode/
+
+# JetBrains (WebStorm, IntelliJ, etc.)
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# ============================
+# TypeScript / Build Tools
+# ============================
+
+# TypeScript cache
 *.tsbuildinfo
-next-env.d.ts
+
+# Optional eslint / stylelint / lint-staged logs
+.eslintcache
+.stylelintcache
+
+# Astro preview/dev cache
+.cache/
+
+# Next.js-style cache (if added later)
+.next/
+
+# Storybook (optional)
+.storybook-out/
+
+# SvelteKit (if used)
+.svelte-kit/
+
+# ============================
+# Testing
+# ============================
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Playwright
+playwright-report/
+test-results/
+
+# ============================
+# Misc
+# ============================
+
+# Mac and Linux Trash
+.Trashes
+*.Trash-*
+
+# Local npm registry (e.g., Verdaccio)
+storage/
+
+# Optional lock files (use depending on your team)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

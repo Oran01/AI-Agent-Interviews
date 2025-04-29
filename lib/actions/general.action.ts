@@ -1,3 +1,15 @@
+/**
+ * General Application Actions
+ *
+ * This file provides server-side actions for handling core interview and feedback operations,
+ * including:
+ * - Fetching interviews for users
+ * - Generating interview feedback using AI
+ * - Retrieving feedback linked to specific interviews
+ *
+ * It uses Firestore for data storage and Google Gemini models for AI-driven feedback generation.
+ */
+
 "use server";
 
 import { feedbackSchema } from "@/constants";
@@ -5,6 +17,7 @@ import { db } from "@/firebase/admin";
 import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 
+// Fetch all interviews for a given user by userId
 export async function getInterviewByUserId(
   userId: string
 ): Promise<Interview[] | null> {
@@ -20,6 +33,7 @@ export async function getInterviewByUserId(
   })) as Interview[];
 }
 
+// Fetch the latest finalized interviews excluding the current user's interviews
 export async function getLatestInterviews(
   params: GetLatestInterviewsParams
 ): Promise<Interview[] | null> {
@@ -39,12 +53,14 @@ export async function getLatestInterviews(
   })) as Interview[];
 }
 
+// Fetch a single interview by its document ID
 export async function getInterviewById(id: string): Promise<Interview | null> {
   const interview = await db.collection("interviews").doc(id).get();
 
   return interview.data() as Interview | null;
 }
 
+// Generate structured feedback for an interview using the transcript
 export async function createFeedback(params: CreateFeedbackParams) {
   const { interviewId, userId, transcript } = params;
 
@@ -107,6 +123,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
   }
 }
 
+// Fetch feedback by interview ID and user ID
 export async function getFeedbackByInterviewId(
   params: GetFeedbackByInterviewIdParams
 ): Promise<Feedback | null> {

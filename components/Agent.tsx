@@ -1,3 +1,10 @@
+/**
+ * Component: Agent
+ * Purpose: Handles the voice call session between the user and the AI interviewer using the Vapi SDK.
+ * It manages call state, captures transcripts, triggers feedback generation upon call end,
+ * and renders the visual interface for the interview session.
+ */
+
 "use client";
 
 import { interviewer } from "@/constants";
@@ -8,13 +15,23 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+/**
+ * CallStatus
+ * Represents the current state of the call session.
+ * Used to control UI behavior and trigger logic transitions.
+ */
 enum CallStatus {
-  INACTIVE = "INACTIVE",
-  CONNECTING = "CONNECTING",
-  ACTIVE = "ACTIVE",
-  FINISHED = "FINISHED",
+  INACTIVE = "INACTIVE", // Call has not started
+  CONNECTING = "CONNECTING", // Call is in the process of connecting
+  ACTIVE = "ACTIVE", // Call is currently ongoing
+  FINISHED = "FINISHED", // Call has ended
 }
 
+/**
+ * SavedMessage
+ * Represents a single transcript message captured during the call.
+ * Used to store the role (user/system/assistant) and the spoken content.
+ */
 interface SavedMessage {
   role: "user" | "system" | "assistant";
   content: string;
@@ -27,11 +44,19 @@ export const Agent = ({
   interviewId,
   questions,
 }: AgentProps) => {
+  // Router hook to programmatically navigate after interview ends
   const router = useRouter();
+
+  // Tracks whether the AI interviewer is currently speaking
   const [isSpeaking, setIsSpeaking] = useState(false);
+
+  // Tracks the current state of the call session
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
+
+  // Stores the list of transcribed messages exchanged during the call
   const [messages, setMessages] = useState<SavedMessage[]>([]);
 
+  // Set up Vapi event listeners
   useEffect(() => {
     const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
     const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
@@ -66,6 +91,7 @@ export const Agent = ({
     };
   }, []);
 
+  // Trigger feedback generation when call ends
   const handleGenerateFeedback = async (messages: SavedMessage[]) => {
     console.log("Generate feedback here.");
 
@@ -83,6 +109,7 @@ export const Agent = ({
     }
   };
 
+  // Handle post-call logic: route based on type
   useEffect(() => {
     if (callStatus === CallStatus.FINISHED) {
       if (type === "generate") {
@@ -93,6 +120,7 @@ export const Agent = ({
     }
   }, [messages, callStatus, type, userId]);
 
+  // Start the Vapi call
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
 
@@ -120,18 +148,23 @@ export const Agent = ({
     }
   };
 
+  // Stop the call manually
   const handleDisconnect = async () => {
     setCallStatus(CallStatus.FINISHED);
 
     vapi.stop();
   };
 
+  // Get the most recent message from the transcript to display in the UI
   const latestMessage = messages[messages.length - 1]?.content;
+
+  // Check if the call is currently inactive or has finished, to toggle UI state accordingly
   const isCallInactiveOrFinished =
     callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
 
   return (
     <>
+      {/* Interviewer card with avatar */}
       <div className="call-view">
         <div className="card-interviewer">
           <div className="avatar">
@@ -147,6 +180,7 @@ export const Agent = ({
           <h3>AI Interviewer</h3>
         </div>
 
+        {/* User card */}
         <div className="card-border">
           <div className="card-content">
             <Image
@@ -161,6 +195,7 @@ export const Agent = ({
         </div>
       </div>
 
+      {/* Live transcript view */}
       {messages.length > 0 && (
         <div className="transcript-border">
           <div className="transcript">
@@ -177,6 +212,7 @@ export const Agent = ({
         </div>
       )}
 
+      {/* Call control buttons */}
       <div className="w-full flex justify-center">
         {callStatus !== "ACTIVE" ? (
           <button className="relative btn-call" onClick={() => handleCall()}>

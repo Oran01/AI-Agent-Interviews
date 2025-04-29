@@ -1,3 +1,9 @@
+/**
+ * Page: Interview Feedback
+ * Purpose: Displays detailed feedback for a completed interview session, including overall impression, category breakdown, strengths, and areas for improvement.
+ * This page is accessed via /interview/[id]/feedback
+ */
+
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/actions/auth.action";
 import {
@@ -11,11 +17,15 @@ import { redirect } from "next/navigation";
 
 const page = async ({ params }: RouteParams) => {
   const { id } = await params;
+
+  // Get the currently logged-in user
   const user = await getCurrentUser();
 
+  // Fetch the interview details by ID
   const interview = await getInterviewById(id);
   if (!interview) redirect("/");
 
+  // Fetch the feedback specific to this interview and user
   const feedback = await getFeedbackByInterviewId({
     interviewId: id,
     userId: user?.id!,
@@ -23,6 +33,7 @@ const page = async ({ params }: RouteParams) => {
 
   return (
     <section className="section-feedback">
+      {/* Header */}
       <div className="flex flex-row justify-center">
         <h1 className="text-4xl font-semibold">
           Feedback on the Interview -{" "}
@@ -30,6 +41,7 @@ const page = async ({ params }: RouteParams) => {
         </h1>
       </div>
 
+      {/* Overall Score and Date */}
       <div className="flex flex-row justify-center">
         <div className="flex flex-row gap-5">
           <div className="flex flex-row gap-2 items-center">
@@ -56,9 +68,11 @@ const page = async ({ params }: RouteParams) => {
 
       <hr />
 
+      {/* Final Assessment */}
       <p>{feedback?.finalAssessment}</p>
 
       <div className="flex flex-col gap-4">
+        {/* Category Breakdown */}
         <h2>Breakdown of the Interview:</h2>
         {feedback?.categoryScores?.map((category, index) => (
           <div key={index}>
@@ -70,6 +84,7 @@ const page = async ({ params }: RouteParams) => {
         ))}
       </div>
 
+      {/* Strengths Section */}
       <div className="flex flex-col gap-3">
         <h3>Strengths</h3>
         <ul>
@@ -79,6 +94,7 @@ const page = async ({ params }: RouteParams) => {
         </ul>
       </div>
 
+      {/* Areas for Improvement Section */}
       <div className="flex flex-col gap-3">
         <h3>Areas for Improvement</h3>
         <ul>
@@ -88,6 +104,7 @@ const page = async ({ params }: RouteParams) => {
         </ul>
       </div>
 
+      {/* Navigation Buttons */}
       <div className="buttons">
         <Button className="btn-secondary flex-1">
           <Link href="/" className="flex w-full justify-center">

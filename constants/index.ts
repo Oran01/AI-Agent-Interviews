@@ -1,6 +1,20 @@
+/**
+ * Constants and Configuration
+ *
+ * This file provides core constants used throughout the application, including:
+ * - Mappings for technology names to standardized identifiers
+ * - Assistant configuration for the AI Interviewer (Vapi/Voice integration)
+ * - Feedback validation schema using Zod
+ * - Predefined interview cover images
+ * - Dummy interview data for testing or seeding
+ *
+ * These constants help normalize data, configure AI behavior, validate forms, and streamline testing.
+ */
+
 import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
 import { z } from "zod";
 
+// Mapping various tech name spellings to standardized identifiers
 export const mappings = {
   "react.js": "react",
   reactjs: "react",
@@ -97,6 +111,7 @@ export const mappings = {
   "aws amplify": "amplify",
 };
 
+// Preconfigured AI Interviewer assistant for Vapi SDK
 export const interviewer: CreateAssistantDTO = {
   name: "Interviewer",
   firstMessage:
@@ -154,6 +169,7 @@ End the conversation on a polite and positive note.
   },
 };
 
+// Zod schema used for validating interview feedback forms
 export const feedbackSchema = z.object({
   totalScore: z.number(),
   categoryScores: z.tuple([
@@ -188,6 +204,7 @@ export const feedbackSchema = z.object({
   finalAssessment: z.string(),
 });
 
+// Available interview cover images for random assignment
 export const interviewCovers = [
   "/adobe.png",
   "/amazon.png",
@@ -203,6 +220,7 @@ export const interviewCovers = [
   "/yahoo.png",
 ];
 
+// Dummy interviews for testing or seeding database
 export const dummyInterviews: Interview[] = [
   {
     id: "1",

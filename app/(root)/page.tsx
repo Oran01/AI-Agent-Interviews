@@ -1,3 +1,10 @@
+/**
+ * Page: Dashboard (Root)
+ * Purpose: Displays the main landing dashboard for authenticated users.
+ * Shows a call-to-action to start an interview, past interviews taken by the user,
+ * and the latest available interviews for practice.
+ */
+
 import InterviewCard from "@/components/InterviewCard";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/actions/auth.action";
@@ -9,7 +16,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 const page = async () => {
+  // Get the currently logged-in user
   const user = await getCurrentUser();
+
+  // Fetch past and latest interviews in parallel
   const [userInterviews, latestInterviews] = await Promise.all([
     await getInterviewByUserId(user?.id!),
     await getLatestInterviews({ userId: user?.id! }),
@@ -17,8 +27,10 @@ const page = async () => {
 
   const hasPastInterviews = userInterviews?.length! > 0;
   const hasUpcomingInterviews = latestInterviews?.length! > 0;
+
   return (
     <>
+      {/* Call-to-Action Section */}
       <section className="card-cta">
         <div className="flex flex-col gap-6 max-w-lg">
           <h2>Get Interview-Ready with AI-Powered Practice & Feedback</h2>
@@ -40,6 +52,7 @@ const page = async () => {
         />
       </section>
 
+      {/* Past Interviews Section */}
       <section className="flex flex-col gap-6 mt-8">
         <h2>Your Interviews</h2>
         <div className="interviews-section">
@@ -53,6 +66,7 @@ const page = async () => {
         </div>
       </section>
 
+      {/* Upcoming Interview Opportunities Section */}
       <section className="flex flex-col gap-6 mt-8">
         <h2>Take an Interview</h2>
         <div className="interviews-section">

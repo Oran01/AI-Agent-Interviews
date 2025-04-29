@@ -1,10 +1,24 @@
+/**
+ * Authentication Actions
+ *
+ * This file provides server-side authentication-related actions for the application.
+ * It manages:
+ * - Setting and clearing session cookies
+ * - Handling user sign-up and sign-in
+ * - Retrieving the current authenticated user
+ * - Verifying authentication status
+ *
+ * These actions leverage Firebase Admin SDK and Next.js server-side cookies.
+ */
+
 "use server";
 
 import { auth, db } from "@/firebase/admin";
 import { cookies } from "next/headers";
 
-const SESSION_DURATION = 60 * 60 * 24 * 7;
+const SESSION_DURATION = 60 * 60 * 24 * 7; // 7 days
 
+// Set a secure session cookie after successful authentication
 export async function setSessionCookie(idToken: string) {
   const cookieStore = await cookies();
 
@@ -21,6 +35,7 @@ export async function setSessionCookie(idToken: string) {
   });
 }
 
+// Sign up a new user and save user information to Firestore
 export async function signUp(params: SignUpParams) {
   const { uid, name, email } = params;
 
@@ -35,8 +50,6 @@ export async function signUp(params: SignUpParams) {
     await db.collection("users").doc(uid).set({
       name,
       email,
-      // profileURL,
-      // resumeURL,
     });
 
     return {
@@ -60,6 +73,7 @@ export async function signUp(params: SignUpParams) {
   }
 }
 
+// Sign in an existing user by validating email and setting session cookie
 export async function signIn(params: SignInParams) {
   const { email, idToken } = params;
 
@@ -82,12 +96,14 @@ export async function signIn(params: SignInParams) {
   }
 }
 
+// Clear the session cookie to sign out a user
 export async function signOut() {
   const cookieStore = await cookies();
 
   cookieStore.delete("session");
 }
 
+// Get the currently authenticated user based on the session cookie
 export async function getCurrentUser(): Promise<User | null> {
   const cookieStore = await cookies();
 
@@ -114,41 +130,8 @@ export async function getCurrentUser(): Promise<User | null> {
   }
 }
 
+// Check if the current request is authenticated
 export async function isAuthenticated() {
   const user = await getCurrentUser();
   return !!user;
-}
-
-export async function getInterviewByUserId(
-  userId: string
-): Promise<Interview[] | null> {
-  const interviews = await db
-    .collection("interviews")
-    .where("userId", "==", userId)
-    .orderBy("createdAt", "desc")
-    .get();
-
-  return interviews.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Interview[];
-}
-
-export async function getLatestInterviews(
-  params: GetLatestInterviewsParams
-): Promise<Interview[] | null> {
-  const { userId, limit = 20 } = params;
-
-  const interviews = await db
-    .collection("interviews")
-    .orderBy("createdAt", "desc")
-    .where("finalized", "==", true)
-    .where("userId", "!=", userId)
-    .limit(limit)
-    .get();
-
-  return interviews.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Interview[];
 }

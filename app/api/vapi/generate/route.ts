@@ -1,3 +1,12 @@
+/**
+ * API Route: /api/vapi/generate
+ * Purpose: Accepts interview generation parameters (role, type, level, techstack, amount, userId)
+ * and generates a list of interview questions using Gemini API. The generated interview is then saved to Firestore.
+ * This route supports:
+ * - POST: To generate and store the interview questions
+ * - GET: Basic test response endpoint
+ */
+
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 
@@ -8,6 +17,7 @@ export async function POST(request: Request) {
   const { type, role, level, techstack, amount, userid } = await request.json();
 
   try {
+    // Generate interview questions using Gemini model
     const { text: questions } = await generateText({
       model: google("gemini-2.0-flash-001"),
       prompt: `Prepare questions for a job interview.
@@ -25,6 +35,7 @@ export async function POST(request: Request) {
     `,
     });
 
+    // Build the interview object with the parsed questions
     const interview = {
       role: role,
       type: type,
@@ -37,6 +48,7 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     };
 
+    // Save the interview to Firestore
     await db.collection("interviews").add(interview);
 
     return Response.json({ success: true }, { status: 200 });
@@ -46,6 +58,7 @@ export async function POST(request: Request) {
   }
 }
 
+// Basic GET handler for testing API availability
 export async function GET() {
   return Response.json({ success: true, data: "Thank you!" }, { status: 200 });
 }
